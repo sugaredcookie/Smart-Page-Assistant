@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Page Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">Smart Page Assistant</h1>
+      <p class="subtitle">AI-powered page analysis</p>
+    </header>
+
+    <div class="actions-grid">
+      <button class="action-btn" id="summarize" data-tooltip="Generate page summary">
+        <span class="icon">📄</span>
+        <span class="label">Summarize</span>
+      </button>
+
+      <button class="action-btn" id="translate" data-tooltip="Translate page content">
+        <span class="icon">🌐</span>
+        <span class="label">Translate</span>
+      </button>
+
+      <button class="action-btn" id="rewrite" data-tooltip="Rewrite selected text">
+        <span class="icon">✏️</span>
+        <span class="label">Rewrite</span>
+      </button>
+
+      <button class="action-btn" id="fix" data-tooltip="Fix grammar and spelling">
+        <span class="icon">🔤</span>
+        <span class="label">Fix Grammar</span>
+      </button>
+
+      <button class="action-btn" id="explain" data-tooltip="Explain page content">
+        <span class="icon">💭</span>
+        <span class="label">Explain</span>
+      </button>
+
+      <button class="action-btn" id="generate" data-tooltip="Generate new content">
+        <span class="icon">✨</span>
+        <span class="label">Generate</span>
+      </button>
+    </div>
+
+    <div class="settings">
+      <label class="checkbox-label">
+        <input type="checkbox" id="replaceContent">
+        <span class="checkmark"></span>
+        Replace page content
+      </label>
+      
+      <select id="languageSelect" class="language-select">
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
+        <option value="zh">Chinese</option>
+        <option value="ja">Japanese</option>
+      </select>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <footer class="footer">
+      <span class="privacy-badge">🔒 Local AI Processing</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
