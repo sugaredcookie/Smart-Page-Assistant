@@ -325,33 +325,3 @@ body {
   animation: spin 1s linear infinite;
   margin-right: 8px;
 }
-
-/* Pulse animation for active states */
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(138, 180, 248, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0); }
-}
-
-.action-btn.processing {
-  animation: pulse 2s infinite;
-  border-color: var(--google-blue);
-}
-
-/* Smooth scroll for the container */
-.container {
-  scroll-behavior: smooth;
-}
-
-/* Focus styles for accessibility */
-.action-btn:focus {
-  outline: none;
-  border-color: var(--google-blue);
-  box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.3);
-}
-
-.language-select:focus {
-  outline: none;
-  border-color: var(--google-blue);
-  box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.3);
-}

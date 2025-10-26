@@ -1,73 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Page Assistant</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <h1 class="title">Smart Page Assistant</h1>
-      <p class="subtitle">AI-powered page analysis</p>
-    </header>
-
-    <div class="actions-grid">
-      <button class="action-btn" id="summarize" data-tooltip="Generate page summary">
-        <span class="icon">📄</span>
-        <span class="label">Summarize</span>
-      </button>
-
-      <button class="action-btn" id="translate" data-tooltip="Translate page content">
-        <span class="icon">🌐</span>
-        <span class="label">Translate</span>
-      </button>
-
-      <button class="action-btn" id="rewrite" data-tooltip="Rewrite selected text">
-        <span class="icon">✏️</span>
-        <span class="label">Rewrite</span>
-      </button>
-
-      <button class="action-btn" id="fix" data-tooltip="Fix grammar and spelling">
-        <span class="icon">🔤</span>
-        <span class="label">Fix Grammar</span>
-      </button>
-
-      <button class="action-btn" id="explain" data-tooltip="Explain page content">
-        <span class="icon">💭</span>
-        <span class="label">Explain</span>
-      </button>
-
-      <button class="action-btn" id="generate" data-tooltip="Generate new content">
-        <span class="icon">✨</span>
-        <span class="label">Generate</span>
-      </button>
+    <div class="container">
+        <div class="header">
+            <div class="title">Smart Page Assistant</div>
+            <div class="subtitle">AI-powered page analysis</div>
+        </div>
+        
+        <div class="actions-grid">
+            <button class="action-btn" id="summarize" data-tooltip="Generate AI summary">
+                <span class="icon">📄</span>
+                <span class="label">Summarize</span>
+            </button>
+            <button class="action-btn" id="translate" data-tooltip="Translate content">
+                <span class="icon">🌐</span>
+                <span class="label">Translate</span>
+            </button>
+            <button class="action-btn" id="rewrite" data-tooltip="Rewrite text">
+                <span class="icon">✏️</span>
+                <span class="label">Rewrite</span>
+            </button>
+            <button class="action-btn" id="fix" data-tooltip="Fix grammar">
+                <span class="icon">🔤</span>
+                <span class="label">Fix Grammar</span>
+            </button>
+            <button class="action-btn" id="explain" data-tooltip="Explain content">
+                <span class="icon">💭</span>
+                <span class="label">Explain</span>
+            </button>
+            <button class="action-btn" id="generate" data-tooltip="Generate content">
+                <span class="icon">✨</span>
+                <span class="label">Generate</span>
+            </button>
+        </div>
+        
+        <div class="status" id="status">Ready to analyze page content</div>
+        
+        <div class="settings">
+            <label class="checkbox-label">
+                <input type="checkbox" id="localProcessing">
+                <span class="checkmark"></span>
+                Local AI Processing
+            </label>
+            
+            <select class="language-select" id="languageSelect">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+            </select>
+        </div>
+        
+        <div class="footer">
+            <div class="privacy-badge">
+                <span>🔒</span>
+                <span>Local Processing • Privacy Focused</span>
+            </div>
+        </div>
     </div>
-
-    <div class="settings">
-      <label class="checkbox-label">
-        <input type="checkbox" id="replaceContent">
-        <span class="checkmark"></span>
-        Replace page content
-      </label>
-      
-      <select id="languageSelect" class="language-select">
-        <option value="es">Spanish</option>
-        <option value="fr">French</option>
-        <option value="de">German</option>
-        <option value="zh">Chinese</option>
-        <option value="ja">Japanese</option>
-      </select>
-    </div>
-
-    <div class="status" id="status"></div>
-
-    <footer class="footer">
-      <span class="privacy-badge">🔒 Local AI Processing</span>
-    </footer>
-  </div>
-
-  <script src="popup.js"></script>
+    
+    <script src="popup.js"></script>
 </body>
 </html>
