@@ -1,4 +1,4 @@
-console.log('Smart Page Assistant content script loaded');
+console.log('Luma content script loaded');
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getPageContent') {

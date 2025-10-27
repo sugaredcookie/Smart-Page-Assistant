@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function checkAIMode() {
-        const isDemoMode = false; // Set to true for video recording
+        const isDemoMode = false; // true = demo mode, it is gonna use the demo content, false = fully functional, ready to use chrome's Built-In API.
         
         return {
             useDemo: isDemoMode,
@@ -255,12 +255,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Remove any existing alerts first
-        const existingAlerts = document.querySelectorAll('.smart-page-alert-overlay');
+        const existingAlerts = document.querySelectorAll('.luma-alert-overlay');
         existingAlerts.forEach(alert => alert.remove());
         
         // Create the alert overlay
         const overlay = document.createElement('div');
-        overlay.className = 'smart-page-alert-overlay';
+        overlay.className = 'luma-alert-overlay';
         overlay.style.cssText = `
             position: fixed;
             top: 0;
@@ -293,18 +293,84 @@ document.addEventListener('DOMContentLoaded', function() {
             position: relative;
         `;
         
-        // Create title
+        // Create title with sound button
+        const titleContainer = document.createElement('div');
+        titleContainer.style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        `;
+        
         const title = document.createElement('div');
         title.className = 'smart-page-alert-title';
         title.style.cssText = `
             font-size: 24px;
             font-weight: 600;
-            margin-bottom: 20px;
             color: #8ab4f8;
-            text-align: center;
             line-height: 1.3;
         `;
         title.textContent = getActionTitle(action);
+        
+        // Create sound button
+        const soundButton = document.createElement('button');
+        soundButton.className = 'smart-page-alert-sound-button';
+        soundButton.innerHTML = '🔊';
+        soundButton.style.cssText = `
+            background: #8ab4f8;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        `;
+        
+        // Add hover effects to sound button
+        soundButton.onmouseover = function() {
+            this.style.background = '#a8c7fa';
+            this.style.transform = 'scale(1.1)';
+        };
+        
+        soundButton.onmouseout = function() {
+            this.style.background = '#8ab4f8';
+            this.style.transform = 'scale(1)';
+        };
+        
+        // Text-to-speech functionality
+        soundButton.onclick = function() {
+            const speech = new SpeechSynthesisUtterance();
+            const cleanContent = content.replace(/\*\*.*?\*\*/g, '').replace(/[🤖🌐✏️🔤💭✨📄]/g, '');
+            
+            speech.text = cleanContent;
+            speech.rate = 1.0;
+            speech.pitch = 1.0;
+            speech.volume = 1.0;
+            speech.lang = 'en-US';
+            
+            // Stop any ongoing speech
+            window.speechSynthesis.cancel();
+            
+            // Speak the content
+            window.speechSynthesis.speak(speech);
+            
+            // Add speaking animation
+            soundButton.innerHTML = '🔊';
+            soundButton.style.animation = 'pulse 1s infinite';
+            
+            // Reset when speech ends
+            speech.onend = function() {
+                soundButton.innerHTML = '🔊';
+                soundButton.style.animation = 'none';
+            };
+        };
+        
+        titleContainer.appendChild(title);
+        titleContainer.appendChild(soundButton);
         
         // Create content
         const contentDiv = document.createElement('div');
@@ -342,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         closeButton.textContent = 'Got it!';
         
-        // Add hover effects
+        // Add hover effects to close button
         closeButton.onmouseover = function() {
             this.style.background = '#a8c7fa';
             this.style.transform = 'translateY(-2px)';
@@ -357,18 +423,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add close functionality
         closeButton.onclick = function() {
+            // Stop any ongoing speech when closing
+            window.speechSynthesis.cancel();
             overlay.remove();
         };
         
         // Close when clicking outside
         overlay.onclick = function(e) {
             if (e.target === overlay) {
+                // Stop any ongoing speech when closing
+                window.speechSynthesis.cancel();
                 overlay.remove();
             }
         };
         
         // Assemble the alert
-        alertBox.appendChild(title);
+        alertBox.appendChild(titleContainer);
         alertBox.appendChild(contentDiv);
         alertBox.appendChild(closeButton);
         overlay.appendChild(alertBox);
@@ -376,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add to page
         document.body.appendChild(overlay);
         
-        // Add scrollbar styles
+        // Add scrollbar and animation styles
         const style = document.createElement('style');
         style.textContent = `
             .smart-page-alert-content::-webkit-scrollbar {
@@ -392,6 +462,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             .smart-page-alert-content::-webkit-scrollbar-thumb:hover {
                 background: #a8c7fa;
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
             }
         `;
         document.head.appendChild(style);
