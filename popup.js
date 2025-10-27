@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function checkAIMode() {
-        const isDemoMode = false; // true = demo mode, it is gonna use the demo content, false = fully functional, ready to use chrome's Built-In API.
+        const isDemoMode = true; // true = demo mode, it is gonna use the demo content, false = fully functional, ready to use chrome's Built-In API.
         
         return {
             useDemo: isDemoMode,
