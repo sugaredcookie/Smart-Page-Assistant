@@ -325,3 +325,28 @@ body {
   animation: spin 1s linear infinite;
   margin-right: 8px;
 }
+
+/* Dark themed scrollbar */
+.smart-page-alert-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.smart-page-alert-content::-webkit-scrollbar-track {
+  background: rgba(60, 64, 67, 0.3);
+  border-radius: 4px;
+}
+
+.smart-page-alert-content::-webkit-scrollbar-thumb {
+  background: #5f6368;
+  border-radius: 4px;
+}
+
+.smart-page-alert-content::-webkit-scrollbar-thumb:hover {
+  background: #80868b;
+}
+
+/* Enhanced font size for generated text */
+.smart-page-alert-content {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+}

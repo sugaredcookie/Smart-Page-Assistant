@@ -255,64 +255,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Remove any existing alerts first
-        const existingAlerts = document.querySelectorAll('.luma-alert-overlay');
+        const existingAlerts = document.querySelectorAll('.smart-page-alert-overlay');
         existingAlerts.forEach(alert => alert.remove());
         
-        // Create the alert overlay
+        // Create the alert overlay - positioned on the left side
         const overlay = document.createElement('div');
-        overlay.className = 'luma-alert-overlay';
+        overlay.className = 'smart-page-alert-overlay';
         overlay.style.cssText = `
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
+            width: 40vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(32, 33, 36, 0.98);
+            border-right: 3px solid #8ab4f8;
             z-index: 10000;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.3);
         `;
         
         // Create the alert content
         const alertBox = document.createElement('div');
         alertBox.className = 'smart-page-alert';
         alertBox.style.cssText = `
-            background: #202124;
-            border: 3px solid #8ab4f8;
-            border-radius: 20px;
-            padding: 30px;
+            padding: 25px;
             color: white;
             font-family: 'Google Sans', 'Segoe UI', system-ui, sans-serif;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.6);
-            max-width: 600px;
-            max-height: 80vh;
-            min-width: 500px;
-            overflow-y: auto;
-            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         `;
         
-        // Create title with sound button
-        const titleContainer = document.createElement('div');
-        titleContainer.style.cssText = `
+        // Create header with title and controls
+        const header = document.createElement('div');
+        header.style.cssText = `
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #5f6368;
         `;
         
         const title = document.createElement('div');
         title.className = 'smart-page-alert-title';
         title.style.cssText = `
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 600;
             color: #8ab4f8;
             line-height: 1.3;
         `;
         title.textContent = getActionTitle(action);
         
-        // Create sound button
+        // Create controls container
+        const controls = document.createElement('div');
+        controls.style.cssText = `
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        `;
+        
+        // Create sound button - FIXED: Using mousedown instead of click
         const soundButton = document.createElement('button');
         soundButton.className = 'smart-page-alert-sound-button';
         soundButton.innerHTML = '🔊';
@@ -320,9 +326,9 @@ document.addEventListener('DOMContentLoaded', function() {
             background: #8ab4f8;
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -331,116 +337,156 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         // Add hover effects to sound button
-        soundButton.onmouseover = function() {
+        soundButton.addEventListener('mouseover', function() {
             this.style.background = '#a8c7fa';
             this.style.transform = 'scale(1.1)';
-        };
+        });
         
-        soundButton.onmouseout = function() {
+        soundButton.addEventListener('mouseout', function() {
+            if (this.innerHTML !== '⏸️') {
+                this.style.background = '#8ab4f8';
+                this.style.transform = 'scale(1)';
+            }
+        });
+        
+        // Text-to-speech functionality - FIXED: Using mousedown event
+        let isSpeaking = false;
+        let currentSpeech = null;
+        
+        soundButton.addEventListener('mousedown', function(e) {
+            e.stopPropagation(); // Prevent event bubbling
+            
+            if (isSpeaking) {
+                // Stop speaking
+                window.speechSynthesis.cancel();
+                this.innerHTML = '🔊';
+                this.style.background = '#8ab4f8';
+                this.style.animation = 'none';
+                isSpeaking = false;
+                currentSpeech = null;
+            } else {
+                // Start speaking
+                const speech = new SpeechSynthesisUtterance();
+                const cleanContent = content.replace(/\*\*.*?\*\*/g, '').replace(/[🤖🌐✏️🔤💭✨📄]/g, '');
+                
+                speech.text = cleanContent;
+                speech.rate = 1.0;
+                speech.pitch = 1.0;
+                speech.volume = 1.0;
+                speech.lang = 'en-US';
+                
+                // Stop any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                // Speak the content
+                window.speechSynthesis.speak(speech);
+                currentSpeech = speech;
+                
+                // Add speaking animation
+                this.innerHTML = '⏸️';
+                this.style.animation = 'pulse 1s infinite';
+                this.style.background = '#81c995';
+                isSpeaking = true;
+                
+                // Reset when speech ends
+                speech.onend = function() {
+                    soundButton.innerHTML = '🔊';
+                    soundButton.style.animation = 'none';
+                    soundButton.style.background = '#8ab4f8';
+                    isSpeaking = false;
+                    currentSpeech = null;
+                };
+                
+                speech.onerror = function() {
+                    soundButton.innerHTML = '🔊';
+                    soundButton.style.animation = 'none';
+                    soundButton.style.background = '#8ab4f8';
+                    isSpeaking = false;
+                    currentSpeech = null;
+                };
+            }
+        });
+        
+        // Create close button (X icon)
+        const closeButton = document.createElement('button');
+        closeButton.className = 'smart-page-alert-close';
+        closeButton.innerHTML = '✕';
+        closeButton.style.cssText = `
+            background: #5f6368;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: white;
+            font-weight: bold;
+        `;
+        
+        // Add hover effects to close button
+        closeButton.addEventListener('mouseover', function() {
             this.style.background = '#8ab4f8';
+            this.style.transform = 'scale(1.1)';
+        });
+        
+        closeButton.addEventListener('mouseout', function() {
+            this.style.background = '#5f6368';
             this.style.transform = 'scale(1)';
-        };
+        });
         
-        // Text-to-speech functionality
-        soundButton.onclick = function() {
-            const speech = new SpeechSynthesisUtterance();
-            const cleanContent = content.replace(/\*\*.*?\*\*/g, '').replace(/[🤖🌐✏️🔤💭✨📄]/g, '');
-            
-            speech.text = cleanContent;
-            speech.rate = 1.0;
-            speech.pitch = 1.0;
-            speech.volume = 1.0;
-            speech.lang = 'en-US';
-            
-            // Stop any ongoing speech
+        // Add close functionality
+        closeButton.addEventListener('click', function() {
+            // Stop any ongoing speech when closing
             window.speechSynthesis.cancel();
-            
-            // Speak the content
-            window.speechSynthesis.speak(speech);
-            
-            // Add speaking animation
-            soundButton.innerHTML = '🔊';
-            soundButton.style.animation = 'pulse 1s infinite';
-            
-            // Reset when speech ends
-            speech.onend = function() {
-                soundButton.innerHTML = '🔊';
-                soundButton.style.animation = 'none';
-            };
-        };
+            overlay.style.transform = 'translateX(-100%)';
+            document.body.classList.remove('smart-page-panel-open');
+            setTimeout(() => {
+                overlay.remove();
+            }, 400);
+        });
         
-        titleContainer.appendChild(title);
-        titleContainer.appendChild(soundButton);
+        // Assemble controls
+        controls.appendChild(soundButton);
+        controls.appendChild(closeButton);
+        header.appendChild(title);
+        header.appendChild(controls);
         
-        // Create content
+        // Create content area
         const contentDiv = document.createElement('div');
         contentDiv.className = 'smart-page-alert-content';
         contentDiv.style.cssText = `
             font-size: 16px;
             line-height: 1.6;
             white-space: pre-line;
-            margin-bottom: 25px;
-            max-height: 50vh;
+            flex: 1;
             overflow-y: auto;
             padding: 15px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         `;
         contentDiv.textContent = content;
         
-        // Create close button
-        const closeButton = document.createElement('button');
-        closeButton.className = 'smart-page-alert-button';
-        closeButton.style.cssText = `
-            background: #8ab4f8;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 16px;
-            display: block;
-            margin: 0 auto;
-            transition: all 0.2s ease;
-            min-width: 140px;
+        // Create footer with action info
+        const footer = document.createElement('div');
+        footer.style.cssText = `
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #5f6368;
+            font-size: 12px;
+            color: #9aa0a6;
+            text-align: center;
         `;
-        closeButton.textContent = 'Got it!';
-        
-        // Add hover effects to close button
-        closeButton.onmouseover = function() {
-            this.style.background = '#a8c7fa';
-            this.style.transform = 'translateY(-2px)';
-            this.style.boxShadow = '0 6px 20px rgba(138, 180, 248, 0.4)';
-        };
-        
-        closeButton.onmouseout = function() {
-            this.style.background = '#8ab4f8';
-            this.style.transform = 'translateY(0)';
-            this.style.boxShadow = 'none';
-        };
-        
-        // Add close functionality
-        closeButton.onclick = function() {
-            // Stop any ongoing speech when closing
-            window.speechSynthesis.cancel();
-            overlay.remove();
-        };
-        
-        // Close when clicking outside
-        overlay.onclick = function(e) {
-            if (e.target === overlay) {
-                // Stop any ongoing speech when closing
-                window.speechSynthesis.cancel();
-                overlay.remove();
-            }
-        };
+        footer.innerHTML = `💡 <strong>Tip:</strong> Compare with original content on the right`;
         
         // Assemble the alert
-        alertBox.appendChild(titleContainer);
+        alertBox.appendChild(header);
         alertBox.appendChild(contentDiv);
-        alertBox.appendChild(closeButton);
+        alertBox.appendChild(footer);
         overlay.appendChild(alertBox);
         
         // Add to page
@@ -453,15 +499,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 width: 8px;
             }
             .smart-page-alert-content::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.05);
+                background: rgba(60, 64, 67, 0.3);
                 border-radius: 4px;
             }
             .smart-page-alert-content::-webkit-scrollbar-thumb {
-                background: #8ab4f8;
+                background: #5f6368;
                 border-radius: 4px;
             }
             .smart-page-alert-content::-webkit-scrollbar-thumb:hover {
-                background: #a8c7fa;
+                background: #80868b;
             }
             
             @keyframes pulse {
@@ -469,8 +515,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 50% { transform: scale(1.1); }
                 100% { transform: scale(1); }
             }
+            
+            /* Prevent body scroll when panel is open */
+            body.smart-page-panel-open {
+                overflow: hidden;
+            }
+            
+            /* Add subtle background dim to main content */
+            .smart-page-alert-overlay ~ *:not(.smart-page-alert-overlay) {
+                transition: filter 0.4s ease;
+                filter: brightness(0.97);
+            }
         `;
         document.head.appendChild(style);
+        
+        // Add class to body to prevent scrolling
+        document.body.classList.add('smart-page-panel-open');
+        
+        // Animate the panel in from the left
+        setTimeout(() => {
+            overlay.style.transform = 'translateX(0)';
+        }, 50);
+        
+        // Close when clicking outside the panel (on the main content)
+        document.addEventListener('click', function outsideClickHandler(e) {
+            if (!overlay.contains(e.target) && e.target !== overlay) {
+                // Stop any ongoing speech when closing
+                window.speechSynthesis.cancel();
+                overlay.style.transform = 'translateX(-100%)';
+                document.body.classList.remove('smart-page-panel-open');
+                setTimeout(() => {
+                    overlay.remove();
+                    document.removeEventListener('click', outsideClickHandler);
+                }, 400);
+            }
+        });
+        
+        // Also close with Escape key
+        document.addEventListener('keydown', function escapeHandler(e) {
+            if (e.key === 'Escape') {
+                // Stop any ongoing speech when closing
+                window.speechSynthesis.cancel();
+                overlay.style.transform = 'translateX(-100%)';
+                document.body.classList.remove('smart-page-panel-open');
+                setTimeout(() => {
+                    overlay.remove();
+                    document.removeEventListener('keydown', escapeHandler);
+                }, 400);
+            }
+        });
     }
     
     function getActionTitle(action) {
