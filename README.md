@@ -1,4 +1,4 @@
-# Smart Page Assistant - Chrome Extension
+# Luma - Chrome Extension
 
 A Chrome extension that demonstrates complete integration with Chrome's Built-in AI APIs including Summarizer, Translator, Rewriter, Proofreader, Prompt, and Writer APIs.
 
